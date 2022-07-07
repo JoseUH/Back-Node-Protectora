@@ -15,7 +15,11 @@ const {
 
 router.get("/", getAllPets);
 router.get("/:id",  getPetsByID);
-router.post("/",[isAuth],upload.single("picture"), createPets);
+router.post("/",[isAuth],upload.fields([
+  { name: "picture", maxCount: 1 },
+  { name: "picture1", maxCount: 1 },
+  { name: "picture2", maxCount: 1 }
+]), createPets);
 router.delete('/:id',[isAuth],upload.single("picture"), deletePets);
 router.patch('/:id',[isAuth],upload.single("picture"), patchPet)
 

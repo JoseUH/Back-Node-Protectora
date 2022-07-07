@@ -35,8 +35,14 @@ const createPets = async (req, res, next) => {
   try {
     const newPets = new Pet(req.body);
 
-    if (req.file) {
-      newPets.picture = req.file.path;
+    if (req.files.picture) {
+      newPets.picture = req.files.picture[0].path;
+    }
+    if (req.files.picture1) {
+      newPets.picture1 = req.files.picture1[0].path;
+    }
+    if (req.files.picture2) {
+      newPets.picture2 = req.files.picture2[0].path;
     }
     const createdPets = await newPets.save();
     return res.json({
@@ -71,7 +77,7 @@ const deletePets = async (req, res, next) => {
 
       
       const petData= await Pet.findById(id)
-
+      console.log(patchPet)
       
 
       if (petData.picture) {
@@ -82,8 +88,9 @@ const deletePets = async (req, res, next) => {
       if (req.file) {
         patchPet.picture = req.file.path;
       }
-  
+      // patchPet.picture =[...petData.picture, ...patchPet.picture]
       const PetDB = await Pet.findByIdAndUpdate(id, patchPet);
+
       
       return res.status(200).json({ nuevo: patchPet, vieja: PetDB });
     } catch (error) {
