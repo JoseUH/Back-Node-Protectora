@@ -76,12 +76,14 @@ const patchPet = async (req, res, next) => {
     const petData = await Pet.findById(id);
     console.log(patchPet);
 
-    if (petData.picture) {
-      deleteFile(petData.picture);
+    if (req.files.picture) {
+      patchPet.picture = req.files.picture[0].path;
     }
-
-    if (req.file) {
-      patchPet.picture = req.file.path;
+    if (req.files.picture1) {
+      patchPet.picture1 = req.files.picture1[0].path;
+    }
+    if (req.files.picture2) {
+      patchPet.picture2 = req.files.picture2[0].path;
     }
     // patchPet.picture =[...petData.picture, ...patchPet.picture]
     const PetDB = await Pet.findByIdAndUpdate(id, patchPet);
