@@ -1,8 +1,6 @@
-const { deleteFile } = require("../../middlewares/deleteFile");
-const Pet = require("../models/pets.model.js");
-const HTTPSTATUSCODE = require("../../utils/httpStatusCode")
-
-
+const { deleteFile } = require('../../middlewares/deleteFile');
+const Pet = require('../models/pets.model.js');
+const HTTPSTATUSCODE = require('../../utils/httpStatusCode');
 
 const getAllPets = async (req, res, next) => {
   try {
@@ -34,7 +32,7 @@ const getPetsByID = async (req, res, next) => {
 const createPets = async (req, res, next) => {
   try {
     const newPets = new Pet(req.body);
-
+    console.log(req.files.picture);
     if (req.files.picture) {
       newPets.picture = req.files.picture[0].path;
     }
@@ -56,47 +54,42 @@ const createPets = async (req, res, next) => {
 };
 
 const deletePets = async (req, res, next) => {
-    try {
-      const { id } = req.params;
-  
-      const petBorrado = await Pet.findByIdAndDelete(id);
-  
-      return res.status(200).json(petBorrado);
-    } catch (error) {
-      return next(error);
+  try {
+    const { id } = req.params;
+
+    const petBorrado = await Pet.findByIdAndDelete(id);
+
+    return res.status(200).json(petBorrado);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const patchPet = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const patchPet = new Pet(req.body);
+
+    patchPet._id = id;
+
+    const petData = await Pet.findById(id);
+    console.log(patchPet);
+
+    if (petData.picture) {
+      deleteFile(petData.picture);
     }
-  };
-  
-  const patchPet = async (req, res, next) => {
-    try {
-      const { id } = req.params;
-  
-      const patchPet = new Pet(req.body);
-  
-      patchPet._id = id;
 
-      
-      const petData= await Pet.findById(id)
-      console.log(patchPet)
-      
-
-      if (petData.picture) {
-        
-        deleteFile(petData.picture);
-        }
-
-      if (req.file) {
-        patchPet.picture = req.file.path;
-      }
-      // patchPet.picture =[...petData.picture, ...patchPet.picture]
-      const PetDB = await Pet.findByIdAndUpdate(id, patchPet);
-
-      
-      return res.status(200).json({ nuevo: patchPet, vieja: PetDB });
-    } catch (error) {
-
-      return next(error);
+    if (req.file) {
+      patchPet.picture = req.file.path;
     }
-  };
-  
-module.exports = { getAllPets, getPetsByID, createPets,patchPet,deletePets };
+    // patchPet.picture =[...petData.picture, ...patchPet.picture]
+    const PetDB = await Pet.findByIdAndUpdate(id, patchPet);
+
+    return res.status(200).json({ nuevo: patchPet, vieja: PetDB });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = { getAllPets, getPetsByID, createPets, patchPet, deletePets };
